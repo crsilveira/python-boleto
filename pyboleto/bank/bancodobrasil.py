@@ -30,6 +30,8 @@ class BoletoBB(BoletoData):
 
     agencia_cedente = CustomProperty('agencia_cedente', 4)
     conta_cedente = CustomProperty('conta_cedente', 8)
+    #import pudb;pu.db
+    #dv_cedente = CustomProperty('dv_cedente', 8)
 
     def __init__(self, format_convenio, format_nnumero):
         '''
@@ -57,6 +59,7 @@ class BoletoBB(BoletoData):
 
         self._convenio = ""
         self._nosso_numero = ""
+        self.local_pagamento = 'Pagável em qualquer banco'
 
     def format_nosso_numero(self):
         if self.format_convenio == 7:
@@ -99,12 +102,13 @@ class BoletoBB(BoletoData):
 
     @property
     def agencia_conta_cedente(self):
-        return "%s-%s / %s-%s" % (
+        return "%s-%s / %s" % (
             self.agencia_cedente,
             self.modulo11(self.agencia_cedente),
-            self.conta_cedente,
-            self.modulo11(self.conta_cedente)
+            self.conta_cedente
         )
+    #        self.dv_cedente
+    #        self.modulo11(self.conta_cedente)
 
     @property
     def dv_nosso_numero(self):

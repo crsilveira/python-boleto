@@ -349,7 +349,7 @@ class BoletoPDF(object):
                            ) > 8.4 * cm):
 
             # sacado0 = sacado0[:-2] + u'\u2026'
-            sacado0 = sacado0[:-4] + u'...'
+            sacado0 = sacado0[:-4] + '...'
 
         self.pdf_canvas.drawString(
             0 + self.space,
@@ -687,7 +687,7 @@ class BoletoPDF(object):
         )
 
         self.pdf_canvas.setFont('Helvetica', self.font_size_value)
-        beneficiario = u'{} - CPF/CNPJ: {}'.format(
+        beneficiario = '{} - CPF/CNPJ: {}'.format(
             boleto_dados.cedente, boleto_dados.cedente_documento)
         self.pdf_canvas.drawString(0, y + self.space + 10, beneficiario)
         self.pdf_canvas.drawString(0, y + self.space,
@@ -827,6 +827,10 @@ class BoletoPDF(object):
         y += 20 * mm
         d = self._drawReciboSacado(boleto_dados, x, y)
         y += d[1]
+
+        title = "%s - %s" % (boleto_dados.sacado_nome,
+                             boleto_dados.numero_documento)
+        self.pdf_canvas.setTitle(title)
         return (self.width, y)
 
     def nextPage(self):
@@ -856,8 +860,8 @@ class BoletoPDF(object):
     def _codigoBarraI25(self, num, x, y):
         """Imprime Código de barras otimizado para boletos
 
-        O código de barras é otmizado para que o comprimeto seja sempre o
-        estipulado pela febraban de 103mm.
+        O código de barras é otmizado para que o comprimento seja sempre o
+        estipulado pela Febraban de 103mm.
 
         """
         # http://en.wikipedia.org/wiki/Interleaved_2_of_5

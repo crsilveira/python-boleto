@@ -9,8 +9,11 @@ class BoletoSicredi(BoletoData):
     agencia_cedente = CustomProperty('agencia_cedente', 4)
     conta_cedente = CustomProperty('conta_cedente', 8)
     posto = CustomProperty('posto', 2)
-    convenio = CustomProperty('convenio', 4)
+    carteira = CustomProperty('carteira', 1)
+    convenio = CustomProperty('convenio', 15017)
     # Nosso numero (sem dv) com 8 digitos
+    # AA/BXXXXX-DV 
+    # Pag. 6 manual cnab 400
     nosso_numero = CustomProperty('nosso_numero', 8)
 
     def __init__(self):
@@ -24,12 +27,12 @@ class BoletoSicredi(BoletoData):
         super(BoletoSicredi, self).__init__()
 
         self.codigo_banco = "748"
-        self.carteira = 3
-        self.posto = "05"
-        self.logo_image = "logo_sicredi.jpg"
+        self.local_pagamento = u'Pagável prefencialmente nas Coop. de Crédito Sicredi'
+        self.logo_image = "logo_sicredi.png"
 
         # Size of convenio 6, 7 or 8
         self.format_convenio = 5
+        self.posto = '00' 
 
         #  Nosso Numero format. 1 or 2
         #  1: Nosso Numero with 5 positions
@@ -37,15 +40,16 @@ class BoletoSicredi(BoletoData):
         self.format_nnumero = 1  # self.nosso_numero
 
     def format_ano(self):
-        ano = str(self.data_vencimento.strftime('%y'))
+        ano = str(self.data_documento.strftime('%y'))
         ano = ano.zfill(2)
+        #ano = 24
         return ano
 
     def format_nosso_numero(self):
 
         # 14 ano + 2 : Nosso Número deve ser apresentado no formato
         # AA/BXXXXX-D, onde:
-        return "%s/2%s-%s" % (
+        return "%s/3%s-%s" % (
             self.format_ano(),
             self.nosso_numero,
             self.dv_nosso_numero
@@ -80,15 +84,15 @@ class BoletoSicredi(BoletoData):
     @property
     def agencia_conta_cedente(self):
         return "%s.%s.%s" % (
-            self.agencia_cedente,
-            self.posto,
+            self.agencia_cedente[:self.agencia_cedente.find('-')],
+            self.dv_agencia,
             self.convenio
         )
 
     @property
     def dv_nosso_numero(self):
-        dv = "%s%s%s%s2%s" % (self.agencia_cedente,
-                              self.posto,
+        dv = "%s%s%s%s3%s" % (self.agencia_cedente[:self.agencia_cedente.find('-')],
+                              self.dv_agencia,
                               self.convenio,
                               self.format_ano(),
                               self.nosso_numero
@@ -103,12 +107,12 @@ class BoletoSicredi(BoletoData):
             #        "3027050000414205586")
             # 14 ano + 2 : Nosso Número deve ser apresentado no formato
             # AA/BXXXXX-D, onde:
-            content = "%s1%s2%s%s%s%s%s10" % (self.carteira,
+            content = "%s1%s3%s%s%s%s%s10" % (self.carteira,
                                               self.format_ano(),
                                               self.nosso_numero,
                                               self.dv_nosso_numero,
-                                              self.agencia_cedente,
-                                              self.posto,
+                                              self.agencia_cedente[:self.agencia_cedente.find('-')],
+                                              self.dv_agencia,
                                               self.convenio
                                               )
             n = self.modulo11(content)
